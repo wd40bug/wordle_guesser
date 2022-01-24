@@ -1,27 +1,27 @@
 #Windows: "C:\\Users\\wd40b\\eclipse-workspace\\wordle guesser\\src\\main\\resources\\logs"
-setwd("C:\\Users\\wd40b\\eclipse-workspace\\wordle guesser\\src\\main\\resources\\logs")
-myData <- read.table("2022-01-20-19-37-37.psv",header=TRUE, sep="|")
+#MacOS: "/Users/williamdale/Documents/wordle_guesser/src/main/resources/logs"
+setwd("/Users/williamdale/Documents/wordle_guesser/src/main/resources/logs")
+myData <- read.table("2022-01-20-19-37-37.psv", header = TRUE, sep = "|")
 library("stringr")
 library(gcookbook)
 library(tidyverse)
 library(data.table)
 library(dplyr)
-myData$victory<-toupper(myData$victory)
+myData$victory <- toupper(myData$victory)
 myData$victory <- as.logical(myData$victory)
 
-convert_to_vectors <- function(data){
+convert_to_vectors <- function(data) {
   foo <- list()
-  for(val in data) {
-    x <- strsplit(val,",")
-    foo<-append(foo,x)
+  for (val in data) {
+    x <- strsplit(val, ",")
+    foo <- append(foo, x)
   }
   foo
 }
 
 myData$values <- convert_to_vectors(myData$values)
-myData$values <- lapply(myData$values,as.integer)
-myData$guesses<- convert_to_vectors(myData$guesses)
-
+myData$values <- lapply(myData$values, as.integer)
+myData$guesses <- convert_to_vectors(myData$guesses)
 
 
 Guesses <- table(myData$rounds)
@@ -61,20 +61,20 @@ for (i in seq_along(myData$victory)) {
     if (has_double_letters(myData[i, 1])) {
       double_word_failures <- double_word_failures + 1
     }
-  }else{
-    success_row_numbers <- append(success_row_numbers,i)
+  }else {
+    success_row_numbers <- append(success_row_numbers, i)
   }
   if (has_double_letters(myData[i, 1])) {
     double_letter_words <- double_letter_words + 1
   }
 }
-head(myData[myData$victory==F,])
-answer_value_hist<-hist(
+head(myData[myData$victory == F,])
+answer_value_hist <- hist(
   myData$answerValue,
   main = "Values of Mystery Words",
   xlab = "value",
 )
-text(answer_value_hist$mids,answer_value_hist$counts,labels = answer_value_hist$counts, adj=c(0.5, -0.5))
+text(answer_value_hist$mids, answer_value_hist$counts, labels = answer_value_hist$counts, adj = c(0.5, -0.5))
 double_letter_failure_plot <- barplot(
   c(double_word_failures, (failures - double_word_failures))
   , ylim = c(0, 100),
@@ -89,13 +89,13 @@ text(double_letter_failure_plot, 0, round(c(double_word_failures,
   , cex = 1, pos = 3)
 double_letter_word_percent <- double_letter_words / length(myData$answer)
 
-normalized_double_letter_word_vector <- c((double_word_failures / double_letter_words)*100,
+normalized_double_letter_word_vector <- c((double_word_failures / double_letter_words) * 100,
                                           ((failures - double_word_failures) /
-                                            (length(myData$answer)-double_letter_words))*100)
+                                            (length(myData$answer) - double_letter_words)) * 100)
 
 double_letter_failure_plot_normalized <- barplot(
   normalized_double_letter_word_vector,
-  ylim = c(0,16),
+  ylim = c(0, 16),
   col = "dark slategray 2",
   names = c("Words With Double Letters", "Words Without Double Letters"),
   xlab = "Type Of Word",
@@ -104,10 +104,10 @@ double_letter_failure_plot_normalized <- barplot(
 )
 text(double_letter_failure_plot, 0, round(normalized_double_letter_word_vector)
   , cex = 1, pos = 3)
-foo<-sapply(myData$values,mean)
+foo <- sapply(myData$values, mean)
 boxplot(
   myData$answerValue,
   horizontal = T,
-  main="Distribution of guess values",
+  main = "Distribution of guess values",
   xlab = "Value"
 )
