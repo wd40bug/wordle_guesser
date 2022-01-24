@@ -1,9 +1,11 @@
+#Windows: "C:\\Users\\wd40b\\eclipse-workspace\\wordle guesser\\src\\main\\resources\\logs"
 setwd("C:\\Users\\wd40b\\eclipse-workspace\\wordle guesser\\src\\main\\resources\\logs")
 myData <- read.table("2022-01-20-19-37-37.psv",header=TRUE, sep="|")
 library("stringr")
 library(gcookbook)
 library(tidyverse)
 library(data.table)
+library(dplyr)
 myData$victory<-toupper(myData$victory)
 myData$victory <- as.logical(myData$victory)
 
@@ -52,17 +54,27 @@ has_double_letters <- function(word) {
 failures <- 0
 double_word_failures <- 0
 double_letter_words <- 0
+success_row_numbers <- NULL
 for (i in seq_along(myData$victory)) {
   if (myData[i, 3] == F) {
     failures <- failures + 1
     if (has_double_letters(myData[i, 1])) {
       double_word_failures <- double_word_failures + 1
     }
+  }else{
+    success_row_numbers <- append(success_row_numbers,i)
   }
   if (has_double_letters(myData[i, 1])) {
     double_letter_words <- double_letter_words + 1
   }
 }
+head(myData[myData$victory==F,])
+answer_value_hist<-hist(
+  myData$answerValue,
+  main = "Values of Mystery Words",
+  xlab = "value",
+)
+text(answer_value_hist$mids,answer_value_hist$counts,labels = answer_value_hist$counts, adj=c(0.5, -0.5))
 double_letter_failure_plot <- barplot(
   c(double_word_failures, (failures - double_word_failures))
   , ylim = c(0, 100),
@@ -92,4 +104,10 @@ double_letter_failure_plot_normalized <- barplot(
 )
 text(double_letter_failure_plot, 0, round(normalized_double_letter_word_vector)
   , cex = 1, pos = 3)
-
+foo<-sapply(myData$values,mean)
+boxplot(
+  myData$answerValue,
+  horizontal = T,
+  main="Distribution of guess values",
+  xlab = "Value"
+)
