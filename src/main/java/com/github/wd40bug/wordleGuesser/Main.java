@@ -144,7 +144,7 @@ public class Main {
             for(int j = 0; j<6; j++){
                 guess = generateStr(convert(badChars),convertKnownChar(unknownChars),convertKnownChar(knownChars),j);
                 roundSummary.addGuess(guess);
-                roundSummary.addValue(evaluateString(guess,j));
+                roundSummary.addValue(evaluateString(guess,j ));
                 if(guess.equals(word)){
                     break;
                 }
@@ -198,6 +198,7 @@ public class Main {
             summary.add(roundSummary);
         }
         File logFile = new File("src/main/resources/logs/"+ new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss'.psv'").format(new Date()));
+        //noinspection ResultOfMethodCallIgnored
         logFile.createNewFile();
         var myWriter = new FileWriter(logFile);
         myWriter.write("answer"+"| "+"answerValue"+"| "+"victory"+"| "+ "guesses" +"| "+ "values"+"| "+"rounds"+System.getProperty("line.separator"));
